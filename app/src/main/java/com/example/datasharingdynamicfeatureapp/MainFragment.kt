@@ -29,13 +29,28 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentFactory
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
+import androidx.lifecycle.ViewModelProvider
 import com.example.datasharingdynamicfeatureapp.ui.theme.DataSharingDynamicFeatureAppTheme
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
 import com.google.android.play.core.splitinstall.SplitInstallRequest
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class MainFragment : Fragment() {
+
+    @Inject
+    internal lateinit var viewModelProviderFactory: ViewModelProvider.Factory
+    private val mainViewModel: MainViewModel by activityViewModels {
+        viewModelProviderFactory
+    }
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,7 +65,7 @@ class MainFragment : Fragment() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainFragmentContent()
+                    MainFragmentContent(viewModel = mainViewModel)
                 }
             }
         }
@@ -60,7 +75,7 @@ class MainFragment : Fragment() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainFragmentContent(modifier: Modifier = Modifier) {
+fun MainFragmentContent(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
@@ -68,19 +83,11 @@ fun MainFragmentContent(modifier: Modifier = Modifier) {
     ) {
         Column {
             Text(
-                text = "Dynamic Feature Data Sharing",
+                text = viewModel.getAppTitle(),
                 style = MaterialTheme.typography.headlineMedium
             )
             StandardSpacer()
-            Text(
-                "This app demonstrates data sharing between an activity that lives in the base app " +
-                        "and a fragment that lives in a dynamic feature module using dependency injection " +
-                        "via Dagger 2 and the Android architecture ViewModel. \n\nNote that according to " +
-                        "the official documentation: \"In feature modules, the way that modules usually " +
-                        "depend on each other is inverted. Therefore, Hilt cannot process annotations in " +
-                        "feature modules. You must use Dagger to perform dependency injection in your " +
-                        "feature modules.\""
-            )
+            Text(viewModel.getAppDescription())
             StandardSpacer()
 
             val activity = LocalContext.current as? FragmentActivity ?: return@Column

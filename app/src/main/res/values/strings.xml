@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">DataSharingDynamicFeatureApp</string>
     <string name="title_dynamicfeature1">Dynamic Feature 1</string>
+    <string name="app_title">Dynamic Feature Data Sharing</string>
+    <string name="app_description">This app demonstrates data sharing between an activity that lives in the base app and a fragment that lives in a dynamic feature module using dependency injection via Dagger 2 and the Android architecture ViewModel. \n\nNote that according to the official documentation: "In feature modules, the way that modules usually depend on each other is inverted. Therefore, Hilt cannot process annotations in feature modules. You must use Dagger to perform dependency injection in your feature modules."</string>
 </resources>
